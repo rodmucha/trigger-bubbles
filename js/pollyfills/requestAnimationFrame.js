@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Implementation of requestAnimationFrame pollyfill.
+ *                
+ * @author Rodrigo Carvalho
+ */
+
 (function () {
 
     if (!window.requestAnimationFrame) {

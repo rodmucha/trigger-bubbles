@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Provides methods to get random values for various data types.
+ *                
+ * @author Rodrigo Carvalho
+ */
+
 var Random = {};
 
 Random = (function () {

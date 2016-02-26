@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Animation engine of projectiles.
+ *                
+ * @author Rodrigo Carvalho
+ */
 
 var Animation = (function () {
     "use strict";

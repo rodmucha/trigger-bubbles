@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Provides methods to get information about the page
+ *                
+ * @author Rodrigo Carvalho
+ */
 
 var PageUtil = {};
 

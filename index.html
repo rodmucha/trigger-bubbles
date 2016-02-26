@@ -4,10 +4,14 @@
         <title>Yieldify - Engineering Take Home Challenge</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
+
         <style type="text/css">
             body{
                 margin: 0;
+            }
+
+            fieldset{
+                display: inline;
             }
         </style>
 
@@ -23,23 +27,73 @@
         <script src="js/animation/Animation.js" type="text/javascript"></script>
     </head>
     <body>
+        <div id="options" style="display: none;">
+            <h3>Animation options</h3>
+
+            <form>
+                <fieldset>
+                    <legend>Basic</legend>
+                    
+                    <div>
+                        <label><b>Circle radius</b></label> <br>
+                        <input type="number" name="radius" min="2"> <br>
+                        <label><b>Bounce factor(%)</b></label> <br>
+                        <input type="number" name="bounceFactor" min="1" max="100"> <br>
+                    </div>
+                    
+                    <br>
+
+                    <div>
+                        <label><b>Mode</b></label> <br>
+                        <input type="radio" name="mode" value="manual"> Manual <br>
+                        <input type="radio" name="mode" value="automatic"> Automatic <br>
+                        <input type="radio" name="mode" value="mixed"> Mixed
+                    </div>
+
+                    <br>
+
+                    <div>
+                        <label><b>Min. Velocity</b></label> <br>
+                        <input type="number" name="minVelocity" min="1"> <br>
+                        <label><b>Max. Velocity</b></label> <br>
+                        <input type="number" name="maxVelocity" max="400"> <br>
+                    </div>
+
+                    <br>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Automatic mode</legend>
+                </fieldset>
+            </form>
+        </div>
 
         <script type="text/javascript">
+            var options = {};
+            var mainContainer = 'scenario';
             var width = PageUtil.getWidth();
             var height = PageUtil.getHeight();
-            var animation = new Animation(document.body, 'scenario', width, height);
+            var animation = new Animation(document.body, mainContainer, width, height);
 
             // start animation
             animation.start();
 
             EventManager.addHandler(animation.getContainer(), 'click',
                     function (evt) {
+                        var clientX = evt.clientX;
+                        var clientY = evt.clientY;
+                        var ballRadius = 20;
+                        var bounceFactor = 0.8;
+
+                        if (clientY + ballRadius >= height) {
+                            clientY = (height - ballRadius);
+                        }
+
                         var velocity = Random.getInt(20, 200);
                         var angle = -Random.getAngleRadians();
-                        var bounceFactor = 0.8;
-                        var ballRadius = 20;
                         var color = Random.getColor();
-                        var point = new Point(evt.clientX, evt.clientY);
+                        var point = new Point(clientX, clientY);
+                        
                         // create projectile
                         var projectile = new Projectile(
                                 animation.getContainer(), bounceFactor, velocity,
@@ -49,6 +103,26 @@
 
                     }
             );
+
+            EventManager.addHandler(window, 'keyup',
+                    function (evt) {
+                        if (evt.keyCode == 27) {
+
+                            if (!animation.isStopped()) {
+                                animation.stop();
+                                
+                                //
+                                document.get
+                            } else {
+                                //do things
+                                
+                                
+                                animation.start();
+                            }
+                        }
+                    }
+            );
+
         </script>
     </body>
 </html>

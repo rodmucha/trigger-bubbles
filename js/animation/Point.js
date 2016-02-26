@@ -1,4 +1,8 @@
-
+/**
+ * @fileoverview Representation of 2D point
+ *                
+ * @author Rodrigo Carvalho
+ */
 
 var Point = (function () {
     "use strict";

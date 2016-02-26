@@ -1,4 +1,8 @@
-
+/**
+ * @fileoverview Representation of one circle and possibility to draw it.
+ *                
+ * @author Rodrigo Carvalho
+ */
 
 var Circle = (function () {
     "use strict";

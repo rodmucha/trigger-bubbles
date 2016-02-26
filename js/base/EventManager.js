@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Provides methods to manage javascript events
+ *                
+ * @author Rodrigo Carvalho
+ */
 
 var EventManager = {};
 
@@ -59,57 +64,56 @@ EventManager = (function () {
     EventManager.getEvent = function (event) {
         return event ? event : window.event;
     };
-    
-    EventManager.getCharCode = function(event){
-        if (typeof event.charCode === "number"){
+
+    EventManager.getCharCode = function (event) {
+        if (typeof event.charCode === "number") {
             return event.charCode;
         } else {
             return event.keyCode;
         }
     },
-
-    EventManager.createMouseEvent = function (type, canBubble, cancelable, view,
-            detail, screenX, screenY, clientX, clientY,
-            ctrlKey, altKey, shiftKey, metaKey,
-            button, relatedTarget) {
-
-        var event;
-
-        if (window.dispatchEvent) {
-            //create event object
-            event = document.createEvent("MouseEvents");
-
-            //initialize the event object
-            event.initMouseEvent(type, canBubble, cancelable, view,
+            EventManager.createMouseEvent = function (type, canBubble, cancelable, view,
                     detail, screenX, screenY, clientX, clientY,
                     ctrlKey, altKey, shiftKey, metaKey,
-                    button, relatedTarget);
-        } else {
-            // IE
+                    button, relatedTarget) {
 
-            //create event object
-            event = document.createEventObject();
+                var event;
 
-            //initialize the event object
-            event.type = type;
-            event.canBubble = canBubble;
-            event.cancelable = cancelable;
-            event.view = view;
-            event.detail = detail;
-            event.screenX = screenX;
-            event.screenY = screenY;
-            event.clientX = clientX;
-            event.clientY = clientY;
-            event.ctrlKey = ctrlKey;
-            event.altKey = altKey;
-            event.shiftKey = shiftKey;
-            event.metaKey = metaKey;
-            event.button = button;
-            event.relatedTarget = relatedTarget;
-        }
+                if (window.dispatchEvent) {
+                    //create event object
+                    event = document.createEvent("MouseEvents");
 
-        return event;
-    };
+                    //initialize the event object
+                    event.initMouseEvent(type, canBubble, cancelable, view,
+                            detail, screenX, screenY, clientX, clientY,
+                            ctrlKey, altKey, shiftKey, metaKey,
+                            button, relatedTarget);
+                } else {
+                    // IE
+
+                    //create event object
+                    event = document.createEventObject();
+
+                    //initialize the event object
+                    event.type = type;
+                    event.canBubble = canBubble;
+                    event.cancelable = cancelable;
+                    event.view = view;
+                    event.detail = detail;
+                    event.screenX = screenX;
+                    event.screenY = screenY;
+                    event.clientX = clientX;
+                    event.clientY = clientY;
+                    event.ctrlKey = ctrlKey;
+                    event.altKey = altKey;
+                    event.shiftKey = shiftKey;
+                    event.metaKey = metaKey;
+                    event.button = button;
+                    event.relatedTarget = relatedTarget;
+                }
+
+                return event;
+            };
 
     EventManager.dispatchEvent = function (element, event) {
         if (window.dispatchEvent) {
@@ -122,7 +126,7 @@ EventManager = (function () {
             element.fireEvent(eventName, event);
         }
     };
-    
+
     return EventManager;
 
 }());

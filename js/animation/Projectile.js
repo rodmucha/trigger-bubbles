@@ -1,8 +1,15 @@
+/**
+ * @fileoverview Representation of one projectile and possibility to draw it.
+ *                
+ * @author Rodrigo Carvalho
+ */
 
 var Projectile = (function () {
     "use strict";
 
+    var GRAVITY = 9.8;
     var HALF_OF_GRAVITY = 4.9;
+    var HALF_OF_PI = (Math.PI / 2);
 
     function Projectile(parentContainer, bounceFactor, velocity, angle, point, radius, color, withTrail, lineWidth) {
         var pcanvas, child;
@@ -36,9 +43,10 @@ var Projectile = (function () {
         this.maxWindowHeight = mHeight;
         this.initialX = point.getX();
         this.initialY = point.getY();
+        this.angle = angle;
         this.velocityX = Physics.velocityX(velocity, angle);
         this.velocityY = Physics.velocityY(velocity, angle);
-        this.maxHeight = Physics.maxHeight(point, velocity, angle);
+        this.durationTime = Physics.durationTime(velocity, angle);
         this.canvas = pcanvas;
         this.context = pcanvas.getContext('2d');
         this.circle = new Circle(point, radius, color, this.context);
@@ -62,14 +70,8 @@ var Projectile = (function () {
         // draw circle
         circle.draw();
 
-        if (this.isAtGround()) {
-            var bounceFactor = this.getBounceFactor();
-            var velocityX = this.getVelocityX() * bounceFactor;
-            var velocityY = this.getVelocityY() * bounceFactor;
-            this.setVelocityX(-velocityX);
-            this.setVelocityY(velocityY);
-            this.setInitialX(circle.getPoint().getX());
-            this.setInitialY(circle.getPoint().getY());
+        if (this.durationTime < 0.1) {
+            return;
         }
 
         var currentTime = (new Date()).getTime();
@@ -88,7 +90,7 @@ var Projectile = (function () {
         // update circle
         oldPoint.setX(newX);
         oldPoint.setY(newY);
-        
+
 
         if (self.trail) {
             var npoint = self.trail.removePoint();
@@ -102,8 +104,21 @@ var Projectile = (function () {
             }
         }
 
-        if (this.isAtGround()) {
-            this.restart();
+        if (this.isAtGround() && (elapsedTime > 0.001)) {
+            var bounceFactor = this.getBounceFactor();
+            var velocityX = this.getVelocityX() * bounceFactor;
+            var velocityY = (this.getVelocityY() + GRAVITY * elapsedTime) * bounceFactor;
+
+            if (Math.abs(this.angle) !== HALF_OF_PI) {
+                velocityY = -velocityY;
+            }
+
+            this.setVelocityX(velocityX);
+            this.setVelocityY(velocityY);
+            this.setInitialX(circle.getPoint().getX());
+            this.setInitialY((this.maxWindowHeight - circleRadius));
+            this.setDurationTime(Physics.durationTimeVy(velocityY));
+            this.restartTime();
         }
     };
 
@@ -182,6 +197,22 @@ var Projectile = (function () {
         this.velocityY = velY;
     };
 
+    proto.setDurationTime = function (durationT) {
+        this.durationTime = durationT;
+    };
+
+    proto.getDurationTime = function () {
+        return this.durationTime;
+    };
+
+    proto.getAngle = function () {
+        return this.angle;
+    };
+
+    proto.setAngle = function (angle) {
+        this.angle = angle;
+    };
+
     proto.getCircle = function () {
         return this.circle;
     };
@@ -198,7 +229,7 @@ var Projectile = (function () {
         return this.trail;
     };
 
-    proto.restart = function () {
+    proto.restartTime = function () {
         this.initialTime = (new Date()).getTime();
     };
 

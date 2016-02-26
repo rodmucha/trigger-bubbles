@@ -1,4 +1,8 @@
-
+/**
+ * @fileoverview Representation of one line and possibility to draw it.
+ *                
+ * @author Rodrigo Carvalho
+ */
 
 var Line = (function () {
     "use strict";

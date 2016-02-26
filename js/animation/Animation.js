@@ -9,6 +9,10 @@ var Animation = (function () {
         lcontainer.setAttribute('id', uniqueName);
         lcontainer.style.width = width + 'px';
         lcontainer.style.height = height + 'px';
+        lcontainer.style.margin = 0;
+        lcontainer.style.border = 0;
+        lcontainer.style.padding = 0;
+        lcontainer.style.position = 'relative';
         htmlElement.appendChild(lcontainer);
 
         this.container = lcontainer;
@@ -53,7 +57,7 @@ var Animation = (function () {
                 if (!proj) {
                     continue;
                 } else if (!proj.isVisible()) {
-                    document.getElementById(prop).setAttribute('class', 'empty');
+                    proj.getCanvas().setAttribute('class', 'empty');
                     lprojectiles[prop] = "";
                     proj.erase();
                     continue;

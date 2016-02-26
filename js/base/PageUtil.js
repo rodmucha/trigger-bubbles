@@ -15,30 +15,16 @@ PageUtil = (function () {
     };
 
     PageUtil.getWidth = function () {
-        var pageWidth = window.innerWidth;
-
-        if (typeof pageWidth !== "number") {
-            if (document.compatMode === "CSS1Compat") {
-                pageWidth = document.documentElement.clientWidth;
-            } else {
-                pageWidth = document.body.clientWidth;
-            }
-        }
-
+        var pageWidth = (window.innerWidth ||
+                document.documentElement.clientWidth ||
+                document.body.clientWidth);
         return pageWidth;
     };
 
     PageUtil.getHeight = function () {
-        var pageHeight = window.innerHeight;
-
-        if (typeof pageHeight !== "number") {
-            if (document.compatMode === "CSS1Compat") {
-                pageHeight = document.documentElement.clientHeight;
-            } else {
-                pageHeight = document.body.clientHeight;
-            }
-        }
-
+        var pageHeight = (window.innerHeight ||
+                document.documentElement.clientHeight ||
+                document.body.clientHeight);
         return pageHeight;
     };
 

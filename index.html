@@ -4,6 +4,12 @@
         <title>Yieldify - Engineering Take Home Challenge</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <style type="text/css">
+            body{
+                margin: 0;
+            }
+        </style>
 
         <script src="js/pollyfills/requestAnimationFrame.js" type="text/javascript"></script>
         <script src="js/base/PageUtil.js" type="text/javascript"></script>
@@ -22,19 +28,27 @@
             var width = PageUtil.getWidth();
             var height = PageUtil.getHeight();
             var animation = new Animation(document.body, 'scenario', width, height);
-            
-            var velocity = 60;
-            var angle = -Math.PI/2;
-//            var velocityX = Math.round(Physics.velocityX(velocity, ));
-//            var velocityY = Math.round(Physics.velocityY(velocity, Math.PI/4));
-//            var durationT
-//            var velocityY = 0;
-            var projectile = new Projectile(animation.getContainer(), .8, velocity, angle, new Point(30,600), 20, 'red');
-//            projectile.draw();
-            
-            
-            animation.add(projectile);
+
+            // start animation
             animation.start();
+
+            EventManager.addHandler(animation.getContainer(), 'click',
+                    function (evt) {
+                        var velocity = Random.getInt(20, 200);
+                        var angle = -Random.getAngleRadians();
+                        var bounceFactor = 0.8;
+                        var ballRadius = 20;
+                        var color = Random.getColor();
+                        var point = new Point(evt.clientX, evt.clientY);
+                        // create projectile
+                        var projectile = new Projectile(
+                                animation.getContainer(), bounceFactor, velocity,
+                                angle, point, ballRadius, color
+                                );
+                        animation.add(projectile);
+
+                    }
+            );
         </script>
     </body>
 </html>

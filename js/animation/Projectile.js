@@ -2,7 +2,7 @@
 var Projectile = (function () {
     "use strict";
 
-    var HALF_GRAVITY = 4.9;
+    var HALF_OF_GRAVITY = 4.9;
 
     function Projectile(parentContainer, bounceFactor, velocity, angle, point, radius, color, withTrail, lineWidth) {
         var pcanvas, child;
@@ -14,8 +14,10 @@ var Projectile = (function () {
         for (var i = 0; i < len; i++) {
             child = childNodes[i];
 
-            if (child.hasOwnProperty('class') && child['class'] === 'empty') {
+            if (child.getAttribute('class') === 'empty') {
+                child.setAttribute('class', '');
                 pcanvas = child;
+                break;
             }
         }
 
@@ -24,6 +26,8 @@ var Projectile = (function () {
             pcanvas.setAttribute('id', childNodes.length);
             pcanvas.setAttribute('width', mWidth);
             pcanvas.setAttribute('height', mHeight);
+            pcanvas.style.position = 'absolute';
+            pcanvas.style['background-color'] = 'transparent';
             parentContainer.appendChild(pcanvas);
         }
 
@@ -54,25 +58,37 @@ var Projectile = (function () {
     proto.draw = function () {
         var self = this;
         var circle = this.circle;
+
         // draw circle
         circle.draw();
 
+        if (this.isAtGround()) {
+            var bounceFactor = this.getBounceFactor();
+            var velocityX = this.getVelocityX() * bounceFactor;
+            var velocityY = this.getVelocityY() * bounceFactor;
+            this.setVelocityX(-velocityX);
+            this.setVelocityY(velocityY);
+            this.setInitialX(circle.getPoint().getX());
+            this.setInitialY(circle.getPoint().getY());
+        }
 
         var currentTime = (new Date()).getTime();
         var circleRadius = circle.getRadius();
         var oldPoint = circle.getPoint();
         var oldX = oldPoint.getX();
         var oldY = oldPoint.getY();
-        var elapsedTime = (currentTime - self.initialTime) / 1000;
+        var elapsedTime = (currentTime - self.initialTime) * 0.001;
 
 
         // Motion calculus
         var newX = self.initialX + (self.velocityX * elapsedTime);
-        var newY = self.initialY + (self.velocityY * elapsedTime) + HALF_GRAVITY * Math.pow(elapsedTime, 2);
+        var newY = self.initialY + (self.velocityY * elapsedTime) +
+                HALF_OF_GRAVITY * Math.pow(elapsedTime, 2);
 
         // update circle
         oldPoint.setX(newX);
         oldPoint.setY(newY);
+        
 
         if (self.trail) {
             var npoint = self.trail.removePoint();
@@ -87,18 +103,8 @@ var Projectile = (function () {
         }
 
         if (this.isAtGround()) {
-            var bounceFactor = this.getBounceFactor();
-            var velocityY = this.getVelocityY() * bounceFactor;
-
-//            if (Math.max(velocityY, 0) === velocityY) {
-                this.setVelocityX(this.getVelocityX() * bounceFactor);
-                this.setVelocityY(velocityY);
-                this.setInitialX(circle.getPoint().getX());
-                this.setInitialY(circle.getPoint().getY());
-                this.restart();
-//            }
+            this.restart();
         }
-
     };
 
     proto.update = function () {
@@ -112,10 +118,9 @@ var Projectile = (function () {
 
         // Motion calculus
         var newX = self.initialX + (self.velocityX * elapsedTime);
-        var newY = self.initialY + (self.velocityY * elapsedTime) + HALF_GRAVITY * Math.pow(elapsedTime, 2);
+        var newY = self.initialY + (self.velocityY * elapsedTime) + HALF_OF_GRAVITY * Math.pow(elapsedTime, 2);
 
         // update circle
-
         oldPoint.setX(newX);
         oldPoint.setY(newY);
     };
@@ -135,6 +140,10 @@ var Projectile = (function () {
         var actualY = this.circle.getPoint().getY();
         var radius = this.circle.getRadius();
         return (actualY + radius >= this.maxWindowHeight);
+    };
+
+    proto.getCanvas = function () {
+        return this.canvas;
     };
 
     proto.getInitialX = function () {

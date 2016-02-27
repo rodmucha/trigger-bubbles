@@ -52,7 +52,8 @@ var Projectile = (function () {
         this.circle = new Circle(point, radius, color, this.context);
 
         if (withTrail) {
-            this.trail = new Line(point, point, color, lineWidth, this.context);
+            this.trail = new Line(new Point(point.getX(), point.getY()),
+                    new Point(point.getX(), point.getY()), color, lineWidth, this.context);
         } else {
             this.trail = null;
         }
@@ -91,13 +92,13 @@ var Projectile = (function () {
         oldPoint.setX(newX);
         oldPoint.setY(newY);
 
-
+        //Todo
         if (self.trail) {
             var npoint = self.trail.removePoint();
-            npoint.setX(oldX);
-            npoint.setY(oldY);
+            npoint.setX(newX);
+            npoint.setY(newY);
 
-            if (oldX > (self.initialX + circleRadius)) {
+            if (newX > (self.initialX + circleRadius)) {
                 self.trail.lineTo(npoint);
             } else {
                 self.trail.addPoint(npoint);

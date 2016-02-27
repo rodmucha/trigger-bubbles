@@ -27,12 +27,6 @@ var Line = (function () {
         // adds point to the line.
         this.points.push(point);
     };
-    
-    proto.addPoint = function (point) {
-        // adds point to the line.
-        this.points.push(point);
-    };
-
 
     proto.removePoint = function () {
         // If has more than 1 point, removes one point and returns it.
@@ -40,7 +34,7 @@ var Line = (function () {
         return ((lpoints.length > 1) ? lpoints.shift() : new Point(0, 0));
     };
 
-    proto.getLineWidth = function(){
+    proto.getLineWidth = function () {
         return this.lineWidth;
     };
 
@@ -79,8 +73,8 @@ var Line = (function () {
         ctx.stroke();
         ctx.restore();
     };
-    
-    proto.lineTo = function(point){
+
+    proto.lineTo = function (point) {
         this.addPoint(point);
         this.draw();
     };

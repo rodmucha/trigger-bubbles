@@ -10,8 +10,12 @@
                 margin: 0;
             }
 
+            form{
+                padding: 20px;
+            }
+
             fieldset{
-                display: inline;
+                padding: 20px;
             }
         </style>
 
@@ -28,79 +32,118 @@
     </head>
     <body>
         <div id="options" style="display: none;">
-            <h3>Animation options</h3>
 
-            <form>
-                <fieldset>
-                    <legend>Basic</legend>
-                    
-                    <div>
-                        <label><b>Circle radius</b></label> <br>
-                        <input type="number" name="radius" min="2"> <br>
-                        <label><b>Bounce factor(%)</b></label> <br>
-                        <input type="number" name="bounceFactor" min="1" max="100"> <br>
-                    </div>
-                    
-                    <br>
+            <form id="optionsForm">
+                <h3>Animation options</h3>
+
+                <fieldset id="base">
+                    <legend>Base</legend>
 
                     <div>
-                        <label><b>Mode</b></label> <br>
-                        <input type="radio" name="mode" value="manual"> Manual <br>
-                        <input type="radio" name="mode" value="automatic"> Automatic <br>
-                        <input type="radio" name="mode" value="mixed"> Mixed
+                        <label>Circle radius(px)</label> <br>
+                        <input type="number" name="circleRadius" min="2" required="required"> <br>
+                        <label>Bounce factor(%)</label> <br>
+                        <input type="number" name="bounceFactor" min="1" max="100" required="required"> <br>
                     </div>
 
                     <br>
 
                     <div>
-                        <label><b>Min. Velocity</b></label> <br>
-                        <input type="number" name="minVelocity" min="1"> <br>
-                        <label><b>Max. Velocity</b></label> <br>
-                        <input type="number" name="maxVelocity" max="400"> <br>
+                        <label>Mode</label> <br>
+                        <input id="manualMode" type="radio" name="mode" value="manual" required="required"> Manual <br>
+                        <input id="automaticMode" type="radio" name="mode" value="automatic" required="required"> Automatic <br>
                     </div>
 
                     <br>
+
+                    <div>
+                        <label>Min. Velocity</label> <br>
+                        <input type="number" name="minVelocity" min="1" required="required"> <br>
+                        <label>Max. Velocity</label> <br>
+                        <input type="number" name="maxVelocity" max="400" required="required"> <br>
+                    </div>
+
                 </fieldset>
 
-                <fieldset>
+                <fieldset id="auto">
                     <legend>Automatic mode</legend>
+
+                    <div>
+                        <label>Clicks per second</label> <br>
+                        <input type="number" name="clicksPerSecond" min="1" required="required"> <br>
+                    </div>
+
+                    <br>
+
+                    <div>
+                        <label>Allow degrees</label> <br>
+                        <input type="checkbox" name="90" required="required"> 90 and -90 <br>
+                        <input type="checkbox" name="0" required="required"> 0 and 360 <br>
+                    </div>
+
+
                 </fieldset>
+
+                <br>
+
+                <button type="submit">Save options</button>
             </form>
         </div>
 
         <script type="text/javascript">
-            var options = {};
-            var mainContainer = 'scenario';
+
+            var options = {
+                0: true,
+                90: true,
+                bounceFactor: 80,
+                clicksPerSecond: 1,
+                maxVelocity: 200,
+                minVelocity: 20,
+                mode: "manual",
+                circleRadius: 15
+            };
+
+            var mainContainerName = 'scenario';
             var width = PageUtil.getWidth();
             var height = PageUtil.getHeight();
-            var animation = new Animation(document.body, mainContainer, width, height);
+            var animation = new Animation(document.body, mainContainerName, width, height);
+            var animationContainer = animation.getContainer();
+            var optionsForm = document.getElementById('options');
+            var manualMode = document.getElementById('manualMode');
+            var automaticMode = document.getElementById('automaticMode');
+            var autoID, intervalClick;
 
             // start animation
             animation.start();
 
-            EventManager.addHandler(animation.getContainer(), 'click',
+            EventManager.addHandler(animationContainer, 'click',
                     function (evt) {
                         var clientX = evt.clientX;
                         var clientY = evt.clientY;
-                        var ballRadius = 20;
-                        var bounceFactor = 0.8;
+                        var circleRadius = options.circleRadius;
+                        var bounceFactor = options.bounceFactor * 0.01;
+                        var velocity = Random.getInt(options.minVelocity, options.maxVelocity);
+                        var color = Random.getColor();
+                        var angle = -Random.getAngleRadians();
+                        var absAngle = Math.abs(angle);
 
-                        if (clientY + ballRadius >= height) {
-                            clientY = (height - ballRadius);
+                        while ((!options[0] && (absAngle === 0 || absAngle === 360)) ||
+                                (!options[90] && (absAngle === 90))) {
+                            angle = -Random.getAngleRadians();
                         }
 
-                        var velocity = Random.getInt(20, 200);
-                        var angle = -Random.getAngleRadians();
-                        var color = Random.getColor();
+                        if (clientY + circleRadius >= height) {
+                            clientY = (height - circleRadius);
+                        }
+
                         var point = new Point(clientX, clientY);
-                        
+
                         // create projectile
                         var projectile = new Projectile(
-                                animation.getContainer(), bounceFactor, velocity,
-                                angle, point, ballRadius, color
-                                );
-                        animation.add(projectile);
+                                animationContainer, bounceFactor, velocity,
+                                angle, point, circleRadius, color);
 
+                        animation.add(projectile);
                     }
             );
 
@@ -110,19 +153,152 @@
 
                             if (!animation.isStopped()) {
                                 animation.stop();
-                                
-                                //
-                                document.get
+                                hideElement(animationContainer);
+                                objectToForm(options);
+                                showElement(optionsForm);
                             } else {
-                                //do things
-                                
-                                
+                                hideElement(optionsForm);
+                                showElement(animationContainer);
                                 animation.start();
                             }
                         }
                     }
             );
 
+            EventManager.addHandler(optionsForm, 'submit',
+                    function (evt) {
+                        EventManager.preventDefault(evt);
+                        EventManager.stopPropagation(evt);
+
+                        options = formToObject();
+
+                        if (options.mode === 'automatic') {
+                            intervalClick = Math.round(1000 / options.clicksPerSecond);
+                            autoClick();
+                        } else {
+                            if (autoID) {
+                                window.clearTimeout(autoID);
+                            }
+                        }
+
+                        hideElement(optionsForm);
+                        showElement(animationContainer);
+                        animation.start();
+                    }
+            );
+
+            EventManager.addHandler(manualMode, 'change',
+                    function (evt) {
+                        if (manualMode.checked) {
+                            setAutoOptions(false);
+                        }
+                    }
+            );
+
+            EventManager.addHandler(automaticMode, 'change',
+                    function (evt) {
+                        if (automaticMode.checked) {
+                            setAutoOptions(true);
+                        }
+                    }
+            );
+
+            // Auxiliary functions
+
+            function autoClick() {
+                var posX = Random.getInt(options.circleRadius, width);
+                var posY = Random.getInt(options.circleRadius, height);
+
+                var clickEvent = EventManager.createMouseEvent(
+                        'click', true, false, window, 1, posX, posY, posX, posY,
+                        false, false, false, false, 0, null
+                        );
+
+                EventManager.dispatchEvent(animationContainer, clickEvent);
+                autoID = window.setTimeout(autoClick, intervalClick);
+            }
+
+            function setAutoOptions(enable) {
+                var elements = document.querySelectorAll('#optionsForm fieldset#auto input');
+                var len = elements.length;
+                var elem;
+
+                if (enable) {
+
+                    for (var i = 0; i < len; i++) {
+                        elem = elements[i];
+                        elem.removeAttribute('disabled');
+                    }
+
+                } else {
+
+                    for (var i = 0; i < len; i++) {
+                        elem = elements[i];
+                        elem.setAttribute('disabled', true)
+                    }
+                }
+
+            }
+
+            function formToObject() {
+                var elements = document.querySelectorAll('#optionsForm input');
+                var len = elements.length;
+                var obj = {};
+                var elem;
+
+                for (var i = 0; i < len; i++) {
+                    elem = elements[i];
+
+                    if (elem.type === 'radio') {
+                        obj[elem.name] = elem.value;
+                        continue;
+                    } else if (elem.type === 'checkbox') {
+                        obj[elem.name] = elem.checked;
+                        continue;
+                    }
+
+                    obj[elem.name] = Number.parseFloat(elem.value) || elem.value;
+                }
+
+                return obj;
+            }
+
+            function objectToForm(obj) {
+                obj = obj || {};
+                var elements = document.querySelectorAll('#optionsForm input');
+                var len = elements.length;
+                var elem;
+
+                for (var i = 0; i < len; i++) {
+                    elem = elements[i];
+
+                    if (elem.type === 'radio') {
+
+                        if (obj[elem.name]===elem.value) {
+                            elem.checked = true;
+                        }else{
+                            elem.checked = false;
+                        }
+
+                        continue;
+                    } else if (elem.type === 'checkbox') {
+                        elem.checked = obj[elem.name];
+                        continue;
+                    }
+
+                    elem.value = obj[elem.name];
+                }
+            }
+
+            function hideElement(elem) {
+                elem.style.display = 'none';
+            }
+
+            function showElement(elem) {
+                elem.style.display = 'block';
+            }
+
         </script>
+
     </body>
 </html>

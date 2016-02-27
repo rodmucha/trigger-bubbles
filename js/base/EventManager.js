@@ -71,49 +71,50 @@ EventManager = (function () {
         } else {
             return event.keyCode;
         }
-    },
-            EventManager.createMouseEvent = function (type, canBubble, cancelable, view,
+    };
+
+    EventManager.createMouseEvent = function (type, canBubble, cancelable, view,
+            detail, screenX, screenY, clientX, clientY,
+            ctrlKey, altKey, shiftKey, metaKey,
+            button, relatedTarget) {
+
+        var event;
+
+        if (window.dispatchEvent) {
+            //create event object
+            event = document.createEvent("MouseEvents");
+
+            //initialize the event object
+            event.initMouseEvent(type, canBubble, cancelable, view,
                     detail, screenX, screenY, clientX, clientY,
                     ctrlKey, altKey, shiftKey, metaKey,
-                    button, relatedTarget) {
+                    button, relatedTarget);
+        } else {
+            // IE
 
-                var event;
+            //create event object
+            event = document.createEventObject();
 
-                if (window.dispatchEvent) {
-                    //create event object
-                    event = document.createEvent("MouseEvents");
+            //initialize the event object
+            event.type = type;
+            event.canBubble = canBubble;
+            event.cancelable = cancelable;
+            event.view = view;
+            event.detail = detail;
+            event.screenX = screenX;
+            event.screenY = screenY;
+            event.clientX = clientX;
+            event.clientY = clientY;
+            event.ctrlKey = ctrlKey;
+            event.altKey = altKey;
+            event.shiftKey = shiftKey;
+            event.metaKey = metaKey;
+            event.button = button;
+            event.relatedTarget = relatedTarget;
+        }
 
-                    //initialize the event object
-                    event.initMouseEvent(type, canBubble, cancelable, view,
-                            detail, screenX, screenY, clientX, clientY,
-                            ctrlKey, altKey, shiftKey, metaKey,
-                            button, relatedTarget);
-                } else {
-                    // IE
-
-                    //create event object
-                    event = document.createEventObject();
-
-                    //initialize the event object
-                    event.type = type;
-                    event.canBubble = canBubble;
-                    event.cancelable = cancelable;
-                    event.view = view;
-                    event.detail = detail;
-                    event.screenX = screenX;
-                    event.screenY = screenY;
-                    event.clientX = clientX;
-                    event.clientY = clientY;
-                    event.ctrlKey = ctrlKey;
-                    event.altKey = altKey;
-                    event.shiftKey = shiftKey;
-                    event.metaKey = metaKey;
-                    event.button = button;
-                    event.relatedTarget = relatedTarget;
-                }
-
-                return event;
-            };
+        return event;
+    };
 
     EventManager.dispatchEvent = function (element, event) {
         if (window.dispatchEvent) {

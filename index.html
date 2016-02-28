@@ -234,7 +234,7 @@
 
                     for (var i = 0; i < len; i++) {
                         elem = elements[i];
-                        elem.setAttribute('disabled', true)
+                        elem.setAttribute('disabled', true);
                     }
                 }
 
@@ -250,7 +250,10 @@
                     elem = elements[i];
 
                     if (elem.type === 'radio') {
-                        obj[elem.name] = elem.value;
+                        if (elem.checked) {
+                            obj[elem.name] = elem.value;
+                        }
+
                         continue;
                     } else if (elem.type === 'checkbox') {
                         obj[elem.name] = elem.checked;
@@ -274,9 +277,9 @@
 
                     if (elem.type === 'radio') {
 
-                        if (obj[elem.name]===elem.value) {
+                        if (obj[elem.name] === elem.value) {
                             elem.checked = true;
-                        }else{
+                        } else {
                             elem.checked = false;
                         }
 

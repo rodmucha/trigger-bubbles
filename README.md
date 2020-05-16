@@ -9,7 +9,7 @@
 
 ### How do I get set up? ###
 
-* The only requirement is have one static web server, to serve the html page and all javascript files.
+* The only requirement is to have one static web server, to serve the HTML page and all javascript files.
 
 ### Who do I talk to? ###
 
